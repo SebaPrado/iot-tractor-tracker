@@ -1,0 +1,17 @@
+{
+  "name": "aws-mqtt-tractor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "aws-iot-device-sdk": "^2.2.15",
+    "dotenv": "^16.4.7",
+    "mqtt": "^5.10.4"
+  }
+}
