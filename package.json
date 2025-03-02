@@ -12,7 +12,6 @@
   "dependencies": {
     "aws-iot-device-sdk": "^2.2.15",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "mqtt": "^5.10.4"
+    "express": "^4.21.2"
   }
 }
