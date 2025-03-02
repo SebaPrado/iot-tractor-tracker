@@ -31,7 +31,7 @@ try {
     keyPath: path.join(__dirname, "certs", "private.pem.key"),
     certPath: path.join(__dirname, "certs", "certificate.pem.crt"),
     caPath: path.join(__dirname, "certs", "AmazonRootCA1.pem"),
-    clientId: "tractor-fixed-id-001",
+    clientId: `tractor-${Math.random().toString(36).substring(7)}`,
     host: process.env.AWS_ENDPOINT,
     region: "eu-north-1",
     debug: true, // Habilita logs detallados

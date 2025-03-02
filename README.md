@@ -33,7 +33,6 @@ dotenv → Manejar variables de entorno de manera segura.
 
 
 /IOT_TRACTOR_TRACKER
-├── aws-mqtt-tractor
 ├── mqttClient.js       
 ├── package.json        
 ├── .env                  
