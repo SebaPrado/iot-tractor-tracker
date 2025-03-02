@@ -11,15 +11,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 console.log("Express configurado");
 
-const path = require("path"); // Agrega esto al inicio
-
-const device = awsIot.device({
-  keyPath: path.join(__dirname, "certs", "private.pem.key"),
-  certPath: path.join(__dirname, "certs", "certificate.pem.crt"),
-  caPath: path.join(__dirname, "certs", "AmazonRootCA1.pem"),
-});
+const path = require("path");
 const fs = require("fs");
 
+// 1. Verificar certificados
 try {
   const key = fs.readFileSync(path.join(__dirname, "certs", "private.pem.key"));
   const cert = fs.readFileSync(path.join(__dirname, "certs", "certificate.pem.crt"));
@@ -30,23 +25,17 @@ try {
   process.exit(1); // Detiene el script si hay error
 }
 
-// Verificar variables de entorno
-// console.log("Verificando variables de entorno:");
-// console.log("AWS_KEY existe:", !!process.env.AWS_KEY);
-// console.log("AWS_CERT existe:", !!process.env.AWS_CERT);
-// console.log("AWS_CA existe:", !!process.env.AWS_CA);
-// console.log("AWS_ENDPOINT existe:", !!process.env.AWS_ENDPOINT);
-
+// 2. Crear cliente MQTT
 try {
   console.log("Intentando crear el cliente MQTT...");
   const device = awsIot.device({
-    keyPath: process.env.AWS_KEY,
-    certPath: process.env.AWS_CERT,
-    caPath: process.env.AWS_CA,
-    clientId: `tractor-fixed-id-001`,
-    host: process.env.AWS_ENDPOINT,
-    region: 'eu-north-1',
-    debug: true
+    keyPath: path.join(__dirname, "certs", "private.pem.key"),
+    certPath: path.join(__dirname, "certs", "certificate.pem.crt"),
+    caPath: path.join(__dirname, "certs", "AmazonRootCA1.pem"),
+    clientId: "tractor-fixed-id-001",
+    host: process.env.AWS_ENDPOINT, // Asegúrate de que AWS_ENDPOINT esté en .env
+    region: "eu-north-1",
+    debug: true,
   });
   console.log("Cliente MQTT creado exitosamente");
 
@@ -54,29 +43,41 @@ try {
   device.on("connect", function () {
     console.log("✅ Conectado a AWS IoT Core");
     try {
-        console.log("Intentando suscribirse a tractor/datos...");
-        device.subscribe("tractor/datos");
-        console.log("Suscripción exitosa. Intentando publicar mensaje...");
-        device.publish(
+      console.log("Intentando suscribirse a tractor/datos...");
+      device.subscribe("tractor/datos", function (err) {
+        if (err) {
+          console.error("Error al suscribirse:", err);
+        } else {
+          console.log("Suscripción exitosa. Intentando publicar mensaje...");
+          device.publish(
             "tractor/datos",
-            JSON.stringify({ mensaje: "Hola desde el tractor 🚜" })
-        );
-        console.log("Mensaje publicado exitosamente");
+            JSON.stringify({ mensaje: "Hola desde el tractor 🚜" }),
+            function (err) {
+              if (err) {
+                console.error("Error al publicar mensaje:", err);
+              } else {
+                console.log("Mensaje publicado exitosamente");
+              }
+            }
+          );
+        }
+      });
     } catch (error) {
-        console.error("Error en el manejo de conexión:", error);
+      console.error("Error en el manejo de conexión:", error);
     }
-});
-device.on("reconnect", function() {
+  });
+
+  device.on("reconnect", function () {
     console.log("Intentando reconectar a AWS IoT Core...");
-});
+  });
 
-device.on("offline", function() {
+  device.on("offline", function () {
     console.log("Dispositivo desconectado de AWS IoT Core");
-});
+  });
 
-device.on("close", function() {
+  device.on("close", function () {
     console.log("Conexión cerrada con AWS IoT Core");
-});
+  });
 
   // 📌 Evento cuando llega un mensaje
   device.on("message", function (topic, payload) {
@@ -94,8 +95,8 @@ device.on("close", function() {
 // Si estás usando Express
 app.use(express.json());
 
-app.get('/status', (req, res) => {
-  res.json({ status: 'online' });
+app.get("/status", (req, res) => {
+  res.json({ status: "online" });
 });
 
 app.listen(port, () => {

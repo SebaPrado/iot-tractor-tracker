@@ -18,4 +18,26 @@ dotenv → Manejar variables de entorno de manera segura.
 2 - de los archivos descargados de web AWS al creat el thing 
 3 -                            '' 
 
-#Crear el Cliente MQTT en Node.js
+3 #Crear el Cliente MQTT en Node.js
+
+4 # Crear una Policy en AWS IoT Core > Security > Policies.
+    Cree un json 
+
+5 # A partir del paso 4 , tengo un certificado ..  
+     Pasos:
+    a) Ve a AWS IoT Core > Security > Certificates.
+    b) Selecciona el certificado que estás usando (el que tiene el ID 68bafeaa2afa9fd8b8413fb7e90225347d6aef646898c1b046382bd4df3af106).
+    c) En la sección Policies, haz clic en Attach Policy.
+    d) Selecciona la política que acabas de crear (TractorPolicy).
+    e) Haz clic en Attach
+
+
+/IOT_TRACTOR_TRACKER
+├── aws-mqtt-tractor
+├── mqttClient.js       
+├── package.json        
+├── .env                  
+└── certs
+    └── certs\AmazonRootCA1.pem 
+    └── certs\certificate.pem.crt
+    └── certs\private.pem.key
